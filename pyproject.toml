@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "projeto_precommit_airflow"
+version = "0.1.0"
+description = "Modelo de qualidade (pre-commit + pytest) para DAGs do Apache Airflow"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "Aureliano Boelter" }]
+
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit==4.5.0",
+  "black==24.8.0",
+  "ruff==0.14.9",
+  "pytest==7.4.4",
+  "isort>=5.13,<6.0",
+  "detect-secrets==1.5.0",
+  "pydantic==2.12.4",
+
+  # Para a integridade importam DAGs:
+  "apache-airflow>=2.8,<3.0",
+]
+
+# ==========================================================
+# Ruff
+# ==========================================================
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+# Pastas adotadas para ignorar
+exclude = [
+  ".git",
+  ".venv",
+  "venv",
+  "__pycache__",
+  "build",
+  "dist",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = [
+  # Black já cuida de quebra de linha, etc.
+  "E203",
+  "E501",
+]
+
+# para permitir autofix com mais liberdade:
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+# ruff format (se for decidido usar no futuro)
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# ==========================================================
+# Black
+# ==========================================================
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+# Evita formatar ambientes/artefatos
+exclude = '''
+/(
+  \.git
+| \.venv
+| venv
+| __pycache__
+| build
+| dist
+)/
+'''
+
+# ==========================================================
+# isort
+# ==========================================================
+[tool.isort]
+profile = "black"
+line_length = 88
+py_version = 312
+skip = [".git", ".venv", "venv", "build", "dist", "__pycache__"]
+# No coso ter módulos internos (ex.: include/)
+# known_first_party = ["include", "projeto_precommit"]
+
+# ==========================================================
+# Pytest
+# ==========================================================
+[tool.pytest.ini_options]
+minversion = "7.4"
+addopts = "-q"
+testpaths = ["projeto_precommit/tests"]
+python_files = ["test_*.py"]
